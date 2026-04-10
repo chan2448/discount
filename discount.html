@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>百分法：成本、標價與售價</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f0fdf4; }
+        .apple { font-size: 3rem; transition: all 0.5s ease; }
+        .stage-box { min-height: 400px; }
+        .arrow-path { stroke-dasharray: 10; animation: dash 2s linear infinite; }
+        @keyframes dash { to { stroke-dashoffset: -20; } }
+        .floating { animation: floating 3s ease-in-out infinite; }
+        @keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-green-200">
+        <!-- 頂部導航/進度 -->
+        <div class="bg-green-600 p-4 text-white text-center">
+            <h1 class="text-2xl font-bold">商人售賣蘋果的故事：百分法與折扣</h1>
+            <p class="text-sm opacity-90">中一數學課題：成本、標價與售價</p>
+        </div>
+
+        <!-- 動畫舞台 -->
+        <div id="stage" class="stage-box relative p-6 flex flex-col items-center justify-center overflow-hidden bg-gradient-to-b from-blue-50 to-green-50">
+            <!-- 動態內容區 -->
+            <div id="animation-content" class="w-full h-full flex flex-col items-center justify-around">
+                <!-- 第一幕：農場買入 -->
+                <div id="scene-1" class="flex flex-col items-center">
+                    <div class="text-6xl mb-4">🚜 🍎</div>
+                    <div class="bg-white p-4 rounded-xl shadow-md text-center">
+                        <p class="text-lg font-bold text-gray-700">第一步：商人從農場買入蘋果</p>
+                        <p class="text-3xl font-black text-blue-600 mt-2">成本 (Cost) = $10</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 公式疊加層 (隱藏，按需顯示) -->
+            <div id="formula-overlay" class="absolute bottom-10 bg-yellow-100 border-2 border-yellow-400 p-3 rounded-lg hidden shadow-lg">
+                <p id="formula-text" class="font-mono font-bold text-gray-800"></p>
+            </div>
+        </div>
+
+        <!-- 互動控制區 -->
+        <div class="p-6 bg-gray-50 border-t border-gray-200">
+            <div class="flex flex-wrap justify-center gap-4 mb-6">
+                <button onclick="showScene(1)" id="btn-1" class="px-6 py-2 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors shadow-md font-bold">1. 農場 (成本)</button>
+                <button onclick="showScene(2)" id="btn-2" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-full hover:bg-green-600 hover:text-white transition-colors shadow-md font-bold">2. 超市標價 (加成)</button>
+                <button onclick="showScene(3)" id="btn-3" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-full hover:bg-green-600 hover:text-white transition-colors shadow-md font-bold">3. 顧客買入 (折扣/售價)</button>
+                <button onclick="showScene(4)" id="btn-4" class="px-6 py-2 bg-gray-300 text-gray-700 rounded-full hover:bg-green-600 hover:text-white transition-colors shadow-md font-bold">總結關係</button>
+            </div>
+
+            <!-- 解說文字 -->
+            <div id="explanation" class="bg-white p-4 rounded-xl border-l-8 border-green-500 min-h-[100px]">
+                <p class="text-gray-800 leading-relaxed">商人來到農場，以每個 $10 的價格買入蘋果。這就是商人的「成本」。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const content = document.getElementById('animation-content');
+        const explanation = document.getElementById('explanation');
+        const formulaOverlay = document.getElementById('formula-overlay');
+        const formulaText = document.getElementById('formula-text');
+
+        function updateButtons(activeIdx) {
+            for(let i=1; i<=4; i++) {
+                const btn = document.getElementById(`btn-${i}`);
+                if(i === activeIdx) {
+                    btn.classList.replace('bg-gray-300', 'bg-green-600');
+                    btn.classList.replace('text-gray-700', 'text-white');
+                } else {
+                    btn.classList.remove('bg-green-600', 'text-white');
+                    btn.classList.add('bg-gray-300', 'text-gray-700');
+                }
+            }
+        }
+
+        function showScene(scene) {
+            updateButtons(scene);
+            formulaOverlay.classList.add('hidden');
+            
+            if (scene === 1) {
+                content.innerHTML = `
+                    <div class="flex flex-col items-center animate-bounce">
+                        <div class="text-8xl mb-4">🍎</div>
+                        <div class="bg-blue-100 p-6 rounded-2xl border-4 border-blue-400 text-center shadow-xl">
+                            <p class="text-xl font-bold text-blue-800">成本 (Cost)</p>
+                            <p class="text-5xl font-black text-blue-600">$10</p>
+                        </div>
+                        <p class="mt-4 text-gray-500 font-bold">農場收購價</p>
+                    </div>
+                `;
+                explanation.innerHTML = `<p class="text-xl font-bold text-green-800">商人來到農場，以每個 $10 的價格買入蘋果。這就是商人的 <span class="text-blue-600">成本 (Cost)</span>。</p>`;
+            } 
+            else if (scene === 2) {
+                content.innerHTML = `
+                    <div class="flex items-center justify-around w-full">
+                        <div class="text-center opacity-50">
+                            <div class="text-4xl">🍎</div>
+                            <p class="font-bold">成本 $10</p>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="text-green-500 font-black text-2xl mb-2 animate-pulse">+50% 加成</div>
+                            <svg width="100" height="40">
+                                <path d="M0 20 L80 20" stroke="#10b981" stroke-width="4" fill="none" class="arrow-path" />
+                                <polygon points="80,10 100,20 80,30" fill="#10b981" />
+                            </svg>
+                        </div>
+                        <div class="flex flex-col items-center floating">
+                            <div class="text-8xl mb-2">🏷️</div>
+                            <div class="bg-red-100 p-6 rounded-2xl border-4 border-red-400 text-center shadow-xl">
+                                <p class="text-xl font-bold text-red-800">標價 (Marked Price)</p>
+                                <p class="text-5xl font-black text-red-600">$15</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                explanation.innerHTML = `<p class="text-xl font-bold text-green-800">商人想賺錢，所以在超市貼上更高的標籤。這叫 <span class="text-red-600">標價 (Marked Price)</span>。<br>標價 = 成本 × (1 + 加成百分率)。</p>`;
+                formulaOverlay.classList.remove('hidden');
+                formulaText.innerText = "$10 × (1 + 50%) = $15";
+            }
+            else if (scene === 3) {
+                content.innerHTML = `
+                    <div class="flex items-center justify-around w-full">
+                        <div class="text-center opacity-50">
+                            <div class="text-4xl text-red-400">🏷️ $15</div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="text-orange-500 font-black text-2xl mb-2 animate-pulse">八折 (20% Off)</div>
+                            <svg width="100" height="40">
+                                <path d="M0 20 L80 20" stroke="#f97316" stroke-width="4" fill="none" class="arrow-path" />
+                                <polygon points="80,10 100,20 80,30" fill="#f97316" />
+                            </svg>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="text-8xl mb-2">🛒</div>
+                            <div class="bg-orange-100 p-6 rounded-2xl border-4 border-orange-400 text-center shadow-xl scale-110 transition-transform">
+                                <p class="text-xl font-bold text-orange-800">售價 (Selling Price)</p>
+                                <p class="text-5xl font-black text-orange-600">$12</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                explanation.innerHTML = `<p class="text-xl font-bold text-green-800">為了促銷，超市進行減價。顧客最後支付的金額稱為 <span class="text-orange-600">售價 (Selling Price)</span>。<br>售價 = 標價 × 折扣百分率。</p>`;
+                formulaOverlay.classList.remove('hidden');
+                formulaText.innerText = "$15 × 80% = $12";
+            }
+            else if (scene === 4) {
+                content.innerHTML = `
+                    <div class="grid grid-cols-3 gap-4 w-full px-4">
+                        <div class="flex flex-col items-center bg-blue-50 p-4 rounded-xl border-2 border-blue-200">
+                            <span class="text-blue-700 font-bold">起點</span>
+                            <div class="text-3xl my-2">🍎</div>
+                            <div class="text-xl font-bold">成本 $10</div>
+                        </div>
+                        <div class="flex flex-col items-center bg-red-50 p-4 rounded-xl border-2 border-red-200">
+                            <span class="text-red-700 font-bold">預想</span>
+                            <div class="text-3xl my-2">🏷️</div>
+                            <div class="text-xl font-bold">標價 $15</div>
+                        </div>
+                        <div class="flex flex-col items-center bg-orange-50 p-4 rounded-xl border-2 border-orange-200 ring-4 ring-orange-300">
+                            <span class="text-orange-700 font-bold">成交</span>
+                            <div class="text-3xl my-2">💰</div>
+                            <div class="text-xl font-bold">售價 $12</div>
+                        </div>
+                    </div>
+                    <div class="mt-8 bg-green-100 p-4 rounded-lg w-full text-center">
+                        <p class="text-2xl font-black text-green-700">盈利 = 售價 - 成本 = $12 - $10 = $2</p>
+                    </div>
+                `;
+                explanation.innerHTML = `<p class="text-lg font-bold text-gray-800 italic">
+                    總結：<br>
+                    1. 標價是商人的「理想價格」。<br>
+                    2. 售價是顧客「最後支付的價格」。<br>
+                    3. 只有 <span class="underline decoration-green-500">售價 > 成本</span>，商人才能賺錢 (盈利)！
+                </p>`;
+            }
+        }
+
+        // 初始化第一幕
+        window.onload = () => showScene(1);
+    </script>
+</body>
+</html>
